@@ -14,12 +14,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "month_breakdown")
-@SequenceGenerator(sequenceName = "SEQ_MTH_BKD", name = "SEQ_MTH_BKD", allocationSize = 1, initialValue = 1)
 public class MonthBreakdown {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MTH_BKD")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ_MTH_BKD_GEN")
+    @SequenceGenerator(sequenceName = "SEQ_MTH_BKD", name = "SEQ_MTH_BKD_GEN", allocationSize = 1, initialValue = 1)
     private Integer               id;
 
     @ManyToOne

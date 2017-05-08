@@ -12,12 +12,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "service")
-@SequenceGenerator(sequenceName = "SEQ_SERVICE", name = "SEQ_SERVICE", allocationSize = 1, initialValue = 1)
 public class ServiceOffer {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SERVICE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ_SERVICE_GEN")
+    @SequenceGenerator(sequenceName = "SEQ_SERVICE", name = "SEQ_SERVICE_GEN", allocationSize = 1, initialValue = 1)
     private Integer  id;
 
     @Column(name = "name")

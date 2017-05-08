@@ -57,6 +57,52 @@
 
     <build>
         <plugins>
+            <!-- Reads in profile-configuration.properties for jdbc properties, which will be used by flyway plug-in -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${basedir}/src/main/resources/application.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Recreate the Database -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>4.0</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>migrate</goal>
+                        </goals>
+                        <configuration>
+                            <url>${spring.datasource.jdbc-url}</url>
+                            <user>${spring.datasource.username}</user>
+                            <password>${spring.datasource.password}</password>
+                            <skip>false</skip>
+                            <locations>
+                                <location>db</location>
+                            </locations>
+                            <sqlMigrationPrefix>V</sqlMigrationPrefix>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

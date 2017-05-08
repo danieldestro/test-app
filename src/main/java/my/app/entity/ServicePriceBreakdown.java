@@ -18,12 +18,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "srv_price_breakdown")
-@SequenceGenerator(sequenceName = "seq_srv_price_bkd", name = "seq_srv_price_bkd", allocationSize = 1, initialValue = 1)
 public class ServicePriceBreakdown {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_srv_price_bkd")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_srv_price_bkd_gen")
+    @SequenceGenerator(sequenceName = "seq_srv_price_bkd", name = "seq_srv_price_bkd_gen", allocationSize = 1, initialValue = 1)
     private Integer                    id;
 
     @ManyToOne
