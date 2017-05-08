@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <timestamp key="dateTimestamp" datePattern="yyyy-MM-dd" />
+    <property name="customPattern" value="%d{HH:mm:ss.SSS} %-5level %-40.40logger{5} [%thread] - %msg%n"/>
+
+    <appender name="APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${customPattern}</pattern>
+        </encoder>
+    </appender>
+  
+    <logger name="my.app" level="INFO" />
+
+    <!-- Enable 'showSql' in 'core-context.xml' and set the level here to 'TRACE' to see the SQL queries parameters -->
+    <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate.cfg.Settings" level="DEBUG" />
+    <logger name="org.hibernate.tool" level="WARN" />
+    <logger name="org.hibernate.jpa.internal.util.LogHelper" level="WARN" />
+
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.springframework.orm.jpa" level="DEBUG" />
+    <logger name="org.springframework.boot.autoconfigure" level="DEBUG" />
+
+    <!-- Avoid docx4j sending not relevant info to the log -->
+    <logger name="org.docx4j" level="WARN" />
+
+    <!-- The connection pooling framework C3PO logs in debug mode by default and displays a number of FileNotFound 
+        stack traces, that they don't consider errors, but we still want to avoid. -->
+    <logger name="com.mchange.v2" level="INFO" />
+
+    <root level="INFO">
+        <appender-ref ref="APPENDER" />
+    </root>
+
+</configuration>
