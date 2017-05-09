@@ -21,12 +21,16 @@ public class Application implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
+        service.calculate(1);
+
         Proposal prop = service.createProposal();
         service.calculate(prop.getId());
         // service.delete(2);
 
         prop = service.createProposal();
-        service.calculate(prop.getId());
+        // service.calculate(prop.getId());
         service.delete(3);
+
+        service.delete(2);
     }
 }

@@ -26,7 +26,7 @@ public class MonthBreakdownRepositoryImpl implements MonthBreakdownRepository {
     @Override
     public void bulkSave(List<MonthBreakdown> monthBreakdowns) {
 
-        LOG.debug("MonthBreakdown batch insert size: {}", batchSize);
+        LOG.info("MonthBreakdown batch insert size: {}", batchSize);
         int lines = 0;
         int batchExecutions = 0;
         entityManager.flush();
@@ -34,14 +34,14 @@ public class MonthBreakdownRepositoryImpl implements MonthBreakdownRepository {
             lines++;
             entityManager.persist(monthBreakdown);
 
-            if (lines % batchSize == 0 && lines > 0) {
+            if (lines >= monthBreakdowns.size() || (lines % batchSize == 0 && lines > 0)) {
                 entityManager.flush();
                 entityManager.clear();
                 batchExecutions++;
 
-                LOG.debug("MonthBreakdown batch insert #{} executed", batchExecutions);
+                LOG.info("MonthBreakdown batch insert #{} executed", batchExecutions);
             }
         }
-        LOG.debug("MonthBreakdown batch insert executed #{} times in total for {} lines", batchExecutions, lines);
+        LOG.info("MonthBreakdown batch insert executed #{} times in total for {} lines", batchExecutions, lines);
     }
 }

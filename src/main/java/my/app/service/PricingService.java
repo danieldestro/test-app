@@ -131,7 +131,7 @@ public class PricingService {
         ServiceOffer s2 = new ServiceOffer();
         s2.setName("S2");
         s2.setProposal(p);
-        s2.setMonths(12);
+        s2.setMonths(10);
 
         p.getServices().add(s2);
 
@@ -153,7 +153,9 @@ public class PricingService {
         }
 
         PriceSummary priceSummary = priceSummaryRepository.findByProposal(proposal);
-        priceSummaryRepository.delete(priceSummary);
+        if (priceSummary != null) {
+            priceSummaryRepository.delete(priceSummary);
+        }
 
         proposalRepository.delete(proposal);
 
