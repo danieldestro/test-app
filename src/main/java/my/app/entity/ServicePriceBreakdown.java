@@ -22,7 +22,7 @@ public class ServicePriceBreakdown {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_srv_price_bkd_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_srv_price_bkd_gen")
     @SequenceGenerator(sequenceName = "seq_srv_price_bkd", name = "seq_srv_price_bkd_gen", allocationSize = 1, initialValue = 1)
     private Integer                    id;
 
@@ -30,8 +30,9 @@ public class ServicePriceBreakdown {
     @JoinColumn(name = "srv_price_summary_id")
     private ServicePriceSummary        servicePriceSummary;
 
-    @Column(name = "country_code")
-    private String                     countryCode;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country                    country;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "servicePriceBreakdown", orphanRemoval = true)
     private final List<MonthBreakdown> monthBreakdowns = new ArrayList<>();
@@ -52,16 +53,15 @@ public class ServicePriceBreakdown {
         this.servicePriceSummary = servicePriceSummary;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public Country getCountry() {
+        return country;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
     public List<MonthBreakdown> getMonthBreakdowns() {
         return monthBreakdowns;
     }
-
 }

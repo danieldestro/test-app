@@ -20,7 +20,7 @@ public class Proposal {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ_PROPOSAL_GEN")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROPOSAL_GEN")
     @SequenceGenerator(sequenceName = "SEQ_PROPOSAL", name = "SEQ_PROPOSAL_GEN", allocationSize = 1, initialValue = 1)
     private Integer            id;
 

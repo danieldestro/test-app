@@ -12,12 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import my.app.entity.Country;
 import my.app.entity.MonthBreakdown;
 import my.app.entity.PriceSummary;
 import my.app.entity.Proposal;
 import my.app.entity.ServiceOffer;
 import my.app.entity.ServicePriceBreakdown;
 import my.app.entity.ServicePriceSummary;
+import my.app.repository.CountryRepository;
 import my.app.repository.PriceSummaryRepository;
 import my.app.repository.ProposalRepository;
 import my.app.repository.ServiceRepository;
@@ -26,9 +28,7 @@ import my.app.repository.ServiceRepository;
 @Transactional
 public class PricingService {
 
-    private static final Logger    LOG       = LoggerFactory.getLogger(PricingService.class);
-
-    private static final String[]  countries = { "BR", "GB", "US" };
+    private static final Logger    LOG = LoggerFactory.getLogger(PricingService.class);
 
     @Autowired
     private ProposalRepository     proposalRepository;
@@ -38,6 +38,9 @@ public class PricingService {
 
     @Autowired
     private PriceSummaryRepository priceSummaryRepository;
+
+    @Autowired
+    private CountryRepository      countryRepository;
 
     public void calculate(Integer id) {
 
@@ -55,17 +58,19 @@ public class PricingService {
 
         PriceSummary savedSummary = priceSummaryRepository.saveAndFlush(summary);
 
-        List<MonthBreakdown> months = getMonths(summary);
-        LOG.info("months: {}", months.size());
-        print(months);
+        LOG.info("=== List MonthBreakdowns for Unsaved PriceSummary  ===");
+        printMonths(summary);
+        LOG.info("=== List MonthBreakdowns for Saved PriceSummary  ===");
+        printMonths(savedSummary);
+    }
 
-        List<MonthBreakdown> savedMonths = getMonths(savedSummary);
-        LOG.info("saved months: {}", savedMonths.size());
+    private void printMonths(PriceSummary summary) {
+        List<MonthBreakdown> savedMonths = getMonths(summary);
+        LOG.info("month breakdowns: {}", savedMonths.size());
         print(savedMonths);
     }
 
     private void print(List<MonthBreakdown> months) {
-        LOG.info("=== LIST MonthBreakdowns ===");
         for (MonthBreakdown month : months) {
             LOG.info(month.toString());
         }
@@ -86,11 +91,13 @@ public class PricingService {
         ServicePriceSummary sps = new ServicePriceSummary();
         sps.setPriceSummary(summary);
 
+        List<Country> countries = countryRepository.findAll();
+
         BigDecimal summaryTotal = BigDecimal.ZERO;
-        for (String country : countries) {
+        for (Country country : countries) {
             ServicePriceBreakdown spb = new ServicePriceBreakdown();
             spb.setServicePriceSummary(sps);
-            spb.setCountryCode(country);
+            spb.setCountry(country);
 
             BigDecimal monthBreakdownTotal = BigDecimal.ZERO;
             for (int i = 1; i <= 12; i++) {

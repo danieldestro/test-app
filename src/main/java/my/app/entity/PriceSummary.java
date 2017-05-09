@@ -22,7 +22,7 @@ public class PriceSummary {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_price_summary_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_price_summary_gen")
     @SequenceGenerator(sequenceName = "seq_price_summary", name = "seq_price_summary_gen", allocationSize = 1, initialValue = 1)
     private Integer                         id;
 

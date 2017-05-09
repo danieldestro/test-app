@@ -18,7 +18,7 @@ public class MonthBreakdown {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ_MTH_BKD_GEN")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MTH_BKD_GEN")
     @SequenceGenerator(sequenceName = "SEQ_MTH_BKD", name = "SEQ_MTH_BKD_GEN", allocationSize = 1, initialValue = 1)
     private Integer               id;
 

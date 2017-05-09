@@ -21,7 +21,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+        <java.version>1.8</java.version>
+        
+        <database>${spring.profiles.active}</database>
 	</properties>
 
 	<dependencies>
@@ -69,7 +71,7 @@
 						<configuration>
 							<files>
 								<file>src/main/resources/application.properties</file>
-								<file>src/main/resources/application-${spring.profiles.active}.properties</file>
+								<file>src/main/resources/application-${database}.properties</file>
 							</files>
 						</configuration>
 					</execution>
@@ -95,7 +97,7 @@
 							<password>${spring.datasource.password}</password>
 							<skip>false</skip>
 							<locations>
-								<location>db/${datasource.type}</location>
+								<location>db/${database}</location>
 							</locations>
 							<sqlMigrationPrefix>V</sqlMigrationPrefix>
 						</configuration>
@@ -119,8 +121,9 @@
 						<configuration>
 							<tasks>
 								<echo>===============================================================</echo>
-								<echo>DB URL: ${spring.datasource.url}</echo>
-								<echo>DB USR: ${spring.datasource.username}</echo>
+                                <echo>DATABASE.: ${database}</echo>
+                                <echo>DB URL...: ${spring.datasource.url}</echo>
+								<echo>DB USR...: ${spring.datasource.username}</echo>
 								<echo>===============================================================</echo>
 							</tasks>
 						</configuration>

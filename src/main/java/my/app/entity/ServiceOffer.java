@@ -16,7 +16,7 @@ public class ServiceOffer {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ_SERVICE_GEN")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SERVICE_GEN")
     @SequenceGenerator(sequenceName = "SEQ_SERVICE", name = "SEQ_SERVICE_GEN", allocationSize = 1, initialValue = 1)
     private Integer  id;
 
