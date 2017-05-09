@@ -34,7 +34,7 @@ public class ServicePriceBreakdown {
     @JoinColumn(name = "country_id")
     private Country                    country;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "servicePriceBreakdown", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "servicePriceBreakdown", orphanRemoval = true, targetEntity = MonthBreakdown.class)
     private final List<MonthBreakdown> monthBreakdowns = new ArrayList<>();
 
     public Integer getId() {
