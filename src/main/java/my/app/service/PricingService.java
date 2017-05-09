@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -20,6 +21,7 @@ import my.app.entity.ServiceOffer;
 import my.app.entity.ServicePriceBreakdown;
 import my.app.entity.ServicePriceSummary;
 import my.app.repository.CountryRepository;
+import my.app.repository.MonthBreakdownRepository;
 import my.app.repository.PriceSummaryRepository;
 import my.app.repository.ProposalRepository;
 import my.app.repository.ServiceRepository;
@@ -28,19 +30,22 @@ import my.app.repository.ServiceRepository;
 @Transactional
 public class PricingService {
 
-    private static final Logger    LOG = LoggerFactory.getLogger(PricingService.class);
+    private static final Logger      LOG = LoggerFactory.getLogger(PricingService.class);
 
     @Autowired
-    private ProposalRepository     proposalRepository;
+    private ProposalRepository       proposalRepository;
 
     @Autowired
-    private ServiceRepository      serviceRepository;
+    private ServiceRepository        serviceRepository;
 
     @Autowired
-    private PriceSummaryRepository priceSummaryRepository;
+    private PriceSummaryRepository   priceSummaryRepository;
 
     @Autowired
-    private CountryRepository      countryRepository;
+    private CountryRepository        countryRepository;
+
+    @Autowired
+    private MonthBreakdownRepository monthBreakdownRepository;
 
     public void calculate(Integer id) {
 
@@ -56,37 +61,26 @@ public class PricingService {
 
         LOG.info("=== CALCULATE PROPOSAL PRICE - FINISHED ===");
 
+        LOG.info("=== List MonthBreakdowns for Unsaved PriceSummary  ===");
+        printAllMonthBreakdowns(summary);
+
+        LOG.info("=== SAVE PRICE SUMMARY - STARTED ===");
+
         PriceSummary savedSummary = priceSummaryRepository.saveAndFlush(summary);
 
-        LOG.info("=== List MonthBreakdowns for Unsaved PriceSummary  ===");
-        printMonths(summary);
+        LOG.info("=== SAVE PRICE SUMMARY - FINISHED ===");
+
         LOG.info("=== List MonthBreakdowns for Saved PriceSummary  ===");
-        printMonths(savedSummary);
+        printAllMonthBreakdowns(savedSummary);
+
+        List<MonthBreakdown> allMonthBreakdowns = getAllMonthBreakdowns(summary, true);
+        monthBreakdownRepository.bulkSave(allMonthBreakdowns);
+
+        LOG.info("=== List MonthBreakdowns for Saved PriceSummary  ===");
+        printAllMonthBreakdowns(savedSummary);
     }
 
-    private void printMonths(PriceSummary summary) {
-        List<MonthBreakdown> savedMonths = getMonths(summary);
-        LOG.info("month breakdowns: {}", savedMonths.size());
-        print(savedMonths);
-    }
-
-    private void print(List<MonthBreakdown> months) {
-        for (MonthBreakdown month : months) {
-            LOG.info(month.toString());
-        }
-    }
-
-    private List<MonthBreakdown> getMonths(PriceSummary summary) {
-        List<MonthBreakdown> months = new ArrayList<>();
-        for (ServicePriceSummary sps : summary.getServicePriceSummaries()) {
-            for (ServicePriceBreakdown spb : sps.getServicePriceBreakdowns()) {
-                months.addAll(spb.getMonthBreakdowns());
-            }
-        }
-        return months;
-    }
-
-    public void calculate(ServiceOffer service, PriceSummary summary) {
+    protected void calculate(ServiceOffer service, PriceSummary summary) {
 
         ServicePriceSummary sps = new ServicePriceSummary();
         sps.setPriceSummary(summary);
@@ -100,7 +94,7 @@ public class PricingService {
             spb.setCountry(country);
 
             BigDecimal monthBreakdownTotal = BigDecimal.ZERO;
-            for (int i = 1; i <= 12; i++) {
+            for (int i = 1; i <= service.getMonths(); i++) {
                 MonthBreakdown mb = new MonthBreakdown();
                 mb.setServicePriceBreakdown(spb);
                 mb.setMonth(i);
@@ -130,12 +124,14 @@ public class PricingService {
         ServiceOffer s1 = new ServiceOffer();
         s1.setName("S1");
         s1.setProposal(p);
+        s1.setMonths(18);
 
         p.getServices().add(s1);
 
         ServiceOffer s2 = new ServiceOffer();
         s2.setName("S2");
         s2.setProposal(p);
+        s2.setMonths(12);
 
         p.getServices().add(s2);
 
@@ -144,5 +140,51 @@ public class PricingService {
         LOG.info("=== NEW PROPOSAL HAS BEEN CREATED ===");
 
         return p;
+    }
+
+    public void delete(int id) {
+
+        LOG.info("=== DELETE EXISTING PROPOSAL - STARTED ===");
+
+        Proposal proposal = proposalRepository.findOne(id);
+        if (proposal == null) {
+            LOG.error("Proposal does not exist: {}", id);
+            throw new RuntimeException("Proposal does not exist");
+        }
+
+        PriceSummary priceSummary = priceSummaryRepository.findByProposal(proposal);
+        priceSummaryRepository.delete(priceSummary);
+
+        proposalRepository.delete(proposal);
+
+        LOG.info("=== DELETE EXISTING PROPOSAL - FINISHED ===");
+    }
+
+    private void printAllMonthBreakdowns(PriceSummary summary) {
+        List<MonthBreakdown> savedMonths = getAllMonthBreakdowns(summary);
+        LOG.info("month breakdowns: {}", savedMonths.size());
+        print(savedMonths);
+    }
+
+    private void print(List<MonthBreakdown> months) {
+        for (MonthBreakdown month : months) {
+            LOG.info(month.toString());
+        }
+    }
+
+    private List<MonthBreakdown> getAllMonthBreakdowns(PriceSummary summary) {
+        return getAllMonthBreakdowns(summary, false);
+    }
+
+    private List<MonthBreakdown> getAllMonthBreakdowns(PriceSummary summary, boolean newOnly) {
+        List<MonthBreakdown> months = new ArrayList<>();
+        for (ServicePriceSummary sps : summary.getServicePriceSummaries()) {
+            for (ServicePriceBreakdown spb : sps.getServicePriceBreakdowns()) {
+                List<MonthBreakdown> all = newOnly ? spb.getMonthBreakdowns().stream().filter(mb -> mb.getId() == null).collect(Collectors.toList())
+                        : spb.getMonthBreakdowns();
+                months.addAll(all);
+            }
+        }
+        return months;
     }
 }

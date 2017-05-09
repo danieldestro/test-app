@@ -22,7 +22,11 @@ public class Application implements CommandLineRunner {
     public void run(String... args) {
 
         Proposal prop = service.createProposal();
-
         service.calculate(prop.getId());
+        // service.delete(2);
+
+        prop = service.createProposal();
+        service.calculate(prop.getId());
+        service.delete(3);
     }
 }

@@ -10,5 +10,5 @@ select @seqProposal = NEXT VALUE FOR SEQ_PROPOSAL;
 
 INSERT INTO proposal VALUES (CAST(@seqProposal as int), 'STANDARD PROPOSAL');
 
-INSERT INTO service VALUES (NEXT VALUE FOR SEQ_SERVICE, 'Service One', CAST(@seqProposal as int));
-INSERT INTO service VALUES (NEXT VALUE FOR SEQ_SERVICE, 'Service Two', CAST(@seqProposal as int));
+INSERT INTO service VALUES (NEXT VALUE FOR SEQ_SERVICE, 'Service One', CAST(@seqProposal as int), 5);
+INSERT INTO service VALUES (NEXT VALUE FOR SEQ_SERVICE, 'Service Two', CAST(@seqProposal as int), 11);

@@ -27,6 +27,9 @@ public class ServiceOffer {
     @JoinColumn(name = "proposal_id")
     private Proposal proposal;
 
+    @Column(name = "months")
+    private Integer  months;
+
     public Integer getId() {
         return id;
     }
@@ -49,5 +52,13 @@ public class ServiceOffer {
 
     public void setProposal(Proposal proposal) {
         this.proposal = proposal;
+    }
+
+    public Integer getMonths() {
+        return months;
+    }
+
+    public void setMonths(Integer months) {
+        this.months = months;
     }
 }
